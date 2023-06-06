@@ -28,8 +28,8 @@ public class Advice {
   private String name;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "content_media_id")
-  private ContentMedia contentMedia;
+  @JoinColumn(name = "media_content_id")
+  private MediaContent mediaContent;
 
   @Column(columnDefinition="varchar(50)")
   private String description;

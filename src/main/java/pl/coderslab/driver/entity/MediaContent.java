@@ -11,7 +11,7 @@ import java.sql.Blob;
 
 @Data
 @Entity
-public class ContentMedia {
+public class MediaContent {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
