@@ -52,7 +52,7 @@ public class AdviceController {
     adviceToUpdate.setDescription(advice.getDescription());
     adviceToUpdate.setMediaContent(advice.getMediaContent());
     adviceToUpdate.setTags(advice.getTags());
-    adviceService.update(advice);
+    adviceService.save(advice);
   }
 
   @DeleteMapping("/{adviceId}")

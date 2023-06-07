@@ -28,8 +28,6 @@ public class AdviceService {
     adviceRepository.save(advice);
   }
 
-  public void update(Advice advice) {adviceRepository.save(advice);}
-
   public void deleteById(Long id){
     adviceRepository.deleteById(id);
   }
