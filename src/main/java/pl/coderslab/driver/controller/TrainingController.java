@@ -12,52 +12,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import pl.coderslab.driver.entity.Advice;
-import pl.coderslab.driver.service.AdviceService;
+import pl.coderslab.driver.entity.Training;
+import pl.coderslab.driver.service.TrainingService;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/advices")
+@RequestMapping("/api/trainings")
 @RequiredArgsConstructor
-public class AdviceController {
+public class TrainingController {
 
-  private final AdviceService adviceService;
+  private final TrainingService trainingService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<Advice> getAllAdvices() {
-    return adviceService.findAll();
+  public List<Training> getAllTrainings() {
+    return trainingService.findAll();
   }
 
-  @GetMapping("/{adviceId}")
+  @GetMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public Advice getAdviceById(@PathVariable long adviceId) {
-    return Optional.ofNullable(adviceService.findById(adviceId))
+  public Training getTrainingById(@PathVariable long trainingId) {
+    return Optional.ofNullable(trainingService.findById(trainingId))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public void createAdvice(@RequestBody Advice advice) {
-    adviceService.save(advice);
+  public void createTraining(@RequestBody Training training) {
+    trainingService.save(training);
   }
 
-  @PutMapping("/{adviceId}")
+  @PutMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public void updateAdvice(@PathVariable long adviceId, @RequestBody Advice advice) {
-    Advice adviceToUpdate = adviceService.findById(adviceId);
-    adviceToUpdate.setName(advice.getName());
-    adviceToUpdate.setDescription(advice.getDescription());
-    adviceToUpdate.setMediaContent(advice.getMediaContent());
-    adviceToUpdate.setTags(advice.getTags());
-    adviceService.save(advice);
+  public void updateTraining(@PathVariable long trainingId, @RequestBody Training training) {
+    Training trainingToUpdate = trainingService.findById(trainingId);
+    trainingToUpdate.setQuestions(training.getQuestions());
+    trainingService.save(training);
   }
 
-  @DeleteMapping("/{adviceId}")
+  @DeleteMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public void deleteAdvice(@PathVariable long adviceId) {
-    adviceService.deleteById(adviceId);
+  public void deleteTraining(@PathVariable long trainingId) {
+    trainingService.deleteById(trainingId);
   }
 }

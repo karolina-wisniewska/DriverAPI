@@ -32,5 +32,4 @@ public class TrainingService {
     trainingRepository.deleteById(id);
   }
 
-
 }
