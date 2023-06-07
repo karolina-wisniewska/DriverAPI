@@ -31,7 +31,7 @@ public class Advice {
   @JoinColumn(name = "media_content_id")
   private MediaContent mediaContent;
 
-  @Column(columnDefinition="varchar(50)")
+  @Column(columnDefinition="text")
   private String description;
 
   @ManyToMany
