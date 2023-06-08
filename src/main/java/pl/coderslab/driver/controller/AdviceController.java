@@ -1,7 +1,9 @@
 package pl.coderslab.driver.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +36,15 @@ public class AdviceController {
   @GetMapping("/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
   public Advice getAdviceById(@PathVariable long adviceId) {
-    return Optional.ofNullable(adviceService.findById(adviceId))
+    return adviceService.findById(adviceId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
+  }
+
+  @GetMapping("/test/{adviceId}")
+  public ResponseEntity<Advice> getAdviceTestById(@PathVariable long adviceId) {
+    Optional<Advice> advice = adviceService.findById(adviceId);
+    return advice.map(a -> new ResponseEntity<>(a, HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   @PostMapping
@@ -47,7 +56,7 @@ public class AdviceController {
   @PutMapping("/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateAdvice(@PathVariable long adviceId, @RequestBody Advice advice) {
-    Advice adviceToUpdate = adviceService.findById(adviceId);
+    Advice adviceToUpdate = adviceService.findById(adviceId).orElseThrow(EntityNotFoundException::new);
     adviceToUpdate.setName(advice.getName());
     adviceToUpdate.setDescription(advice.getDescription());
     adviceToUpdate.setMediaContent(advice.getMediaContent());
