@@ -1,6 +1,5 @@
 package pl.coderslab.driver.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,6 +7,7 @@ import pl.coderslab.driver.entity.Tag;
 import pl.coderslab.driver.repository.TagRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,8 +20,12 @@ public class TagService {
     return tagRepository.findAll();
   }
 
-  public Tag findById(Long id){
-    return tagRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+  public Optional<Tag> findById(Long id){
+    return tagRepository.findById(id);
+  }
+
+  public Optional<Tag> findByName(String name){
+    return tagRepository.findByName(name);
   }
 
   public void save(Tag tag){

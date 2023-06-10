@@ -1,5 +1,6 @@
 package pl.coderslab.driver.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,7 +18,6 @@ import pl.coderslab.driver.entity.Tag;
 import pl.coderslab.driver.service.TagService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tags")
@@ -34,7 +35,14 @@ public class TagController {
   @GetMapping("/{tagId}")
   @ResponseStatus(HttpStatus.OK)
   public Tag getTagById(@PathVariable long tagId) {
-    return Optional.ofNullable(tagService.findById(tagId))
+    return tagService.findById(tagId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
+  }
+
+  @GetMapping(params = "search")
+  @ResponseStatus(HttpStatus.OK)
+  public Tag getTagByName(@RequestParam String search) {
+    return tagService.findByName(search)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
@@ -47,7 +55,7 @@ public class TagController {
   @PutMapping("/{tagId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateTag(@PathVariable long tagId, @RequestBody Tag tag) {
-    Tag tagToUpdate = tagService.findById(tagId);
+    Tag tagToUpdate = tagService.findById(tagId).orElseThrow(EntityNotFoundException::new);
     tagToUpdate.setName(tag.getName());
     tagService.save(tag);
   }
