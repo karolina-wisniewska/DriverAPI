@@ -15,5 +15,3 @@ insert into driver.trainings (advice_id) values (1), (2);
 update driver.questions set training_id = 1 where id between 1 and 3;
 
 update driver.questions set training_id = 2 where id between 4 and 6;
-
-insert into media_content (cover) values (load_file('/home/karolina/coderslab/8_Portfolio_Lab/Driver/driver/src/main/resources/static/images/hamowanie_silnikiem_small.png'));
