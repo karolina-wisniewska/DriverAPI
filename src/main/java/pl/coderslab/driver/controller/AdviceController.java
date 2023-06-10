@@ -65,7 +65,7 @@ public class AdviceController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
-  @GetMapping("/discover/{adviceId}")
+  @GetMapping("/discover-others/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
   public List<ListAdviceDto> discoverOthersById(@PathVariable long adviceId) {
     return adviceService.discoverOthers(adviceId)
