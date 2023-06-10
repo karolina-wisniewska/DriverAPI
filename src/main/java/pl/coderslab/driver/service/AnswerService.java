@@ -20,6 +20,10 @@ public class AnswerService {
     return answerRepository.findAll();
   }
 
+  public List<Answer> findAllByQuestion(Long questionId){
+    return answerRepository.findByQuestion(questionId);
+  }
+
   public Answer findById(Long id){
     return answerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
   }
