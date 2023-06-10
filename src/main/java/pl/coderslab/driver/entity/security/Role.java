@@ -1,4 +1,4 @@
-package pl.coderslab.driver.entity;
+package pl.coderslab.driver.entity.security;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
