@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Tag;
 import pl.coderslab.driver.repository.AdviceRepository;
+import pl.coderslab.driver.util.IndexCalculator;
 
+import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -18,6 +22,7 @@ import java.util.stream.Collectors;
 public class AdviceService {
 
   private final AdviceRepository adviceRepository;
+  private final IndexCalculator indexCalculator;
 
   public List<Advice> findAll(){
     return adviceRepository.findAll();
@@ -45,5 +50,18 @@ public class AdviceService {
 
   public void deleteById(Long id){
     adviceRepository.deleteById(id);
+  }
+
+  public long count(){
+    return adviceRepository.count();
+  }
+
+  public long getAdviceOfTheWeekIndex(){
+    LocalDate date = LocalDate.now();
+    WeekFields weekFields = WeekFields.of(Locale.getDefault());
+    int weekNumber = date.get(weekFields.weekOfWeekBasedYear());
+    int year = date.getYear();
+    long numberOfAdvices = count();
+    return indexCalculator.calculateIndex(weekNumber, year, numberOfAdvices);
   }
 }

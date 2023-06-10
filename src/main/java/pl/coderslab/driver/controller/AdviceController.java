@@ -3,7 +3,6 @@ package pl.coderslab.driver.controller;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,14 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Advice;
+import pl.coderslab.driver.entity.Tag;
+import pl.coderslab.driver.model.FullAdviceDto;
+import pl.coderslab.driver.model.ListAdviceDto;
 import pl.coderslab.driver.service.AdviceService;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/advices")
@@ -29,22 +32,46 @@ public class AdviceController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<Advice> getAllAdvices() {
-    return adviceService.findAll();
+  public List<ListAdviceDto> getAllAdvices() {
+    return adviceService.findAll()
+            .stream()
+            .map(this::convertAdviceToListAdviceDto)
+            .collect(Collectors.toList());
+  }
+
+  @GetMapping(params = "tag")
+  @ResponseStatus(HttpStatus.OK)
+  public List<ListAdviceDto> getAllAdvicesByTag(@RequestParam Tag tag) {
+    return adviceService.findAllByTag(tag)
+            .stream()
+            .map(this::convertAdviceToListAdviceDto)
+            .collect(Collectors.toList());
   }
 
   @GetMapping("/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public Advice getAdviceById(@PathVariable long adviceId) {
+  public FullAdviceDto getAdviceById(@PathVariable long adviceId) {
     return adviceService.findById(adviceId)
+            .map(this::convertAdviceToFullAdviceDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
-  @GetMapping("/test/{adviceId}")
-  public ResponseEntity<Advice> getAdviceTestById(@PathVariable long adviceId) {
-    Optional<Advice> advice = adviceService.findById(adviceId);
-    return advice.map(a -> new ResponseEntity<>(a, HttpStatus.OK))
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  @GetMapping("/advice-of-the-week")
+  @ResponseStatus(HttpStatus.OK)
+  public FullAdviceDto getAdviceOfTheWeek() {
+    long index = adviceService.getAdviceOfTheWeekIndex();
+    return adviceService.findById(index)
+            .map(this::convertAdviceToFullAdviceDto)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
+  }
+
+  @GetMapping("/discover/{adviceId}")
+  @ResponseStatus(HttpStatus.OK)
+  public List<ListAdviceDto> discoverOthersById(@PathVariable long adviceId) {
+    return adviceService.discoverOthers(adviceId)
+            .stream()
+            .map(this::convertAdviceToListAdviceDto)
+            .collect(Collectors.toList());
   }
 
   @PostMapping
@@ -69,4 +96,25 @@ public class AdviceController {
   public void deleteAdvice(@PathVariable long adviceId) {
     adviceService.deleteById(adviceId);
   }
+
+  private ListAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
+    ListAdviceDto listAdviceDto = new ListAdviceDto();
+    listAdviceDto.setId(adviceEntity.getId());
+    listAdviceDto.setName(adviceEntity.getName());
+    listAdviceDto.setDescription(adviceEntity.getDescription());
+    listAdviceDto.setTags(adviceEntity.getTags());
+    listAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
+    return listAdviceDto;
+  }
+
+  private FullAdviceDto convertAdviceToFullAdviceDto(Advice adviceEntity){
+    FullAdviceDto fullAdviceDto = new FullAdviceDto();
+    fullAdviceDto.setId(adviceEntity.getId());
+    fullAdviceDto.setName(adviceEntity.getName());
+    fullAdviceDto.setDescription(adviceEntity.getDescription());
+    fullAdviceDto.setTags(adviceEntity.getTags());
+    fullAdviceDto.setFullContent(adviceEntity.getMediaContent().getFullContent());
+    return fullAdviceDto;
+  }
+
 }
