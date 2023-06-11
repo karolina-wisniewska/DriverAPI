@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Tag;
+import pl.coderslab.driver.entity.security.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,10 @@ public interface AdviceRepository extends JpaRepository<Advice, Long> {
   @Override
   @EntityGraph(attributePaths = {"mediaContent", "tags"})
   List<Advice> findAll();
+
+  @EntityGraph(attributePaths = {"mediaContent", "tags"})
+  @Query("select a from UserParams u join u.passedAdvices a where u.user=:user")
+  List<Advice> findAllByUser(@Param("user") User user);
 
   @Override
   @EntityGraph(attributePaths = {"mediaContent", "tags"})
