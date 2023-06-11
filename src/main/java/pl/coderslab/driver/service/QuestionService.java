@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.coderslab.driver.entity.Answer;
 import pl.coderslab.driver.entity.Question;
 import pl.coderslab.driver.repository.QuestionRepository;
 
@@ -32,5 +33,13 @@ public class QuestionService {
     questionRepository.deleteById(id);
   }
 
+  public List<Question> findAllByTraining(Long trainingId){
+    return questionRepository.findAllByTraining(trainingId);
+  }
+
+  public boolean isQuestionPassed(Question question, Answer answer){
+    Answer correctAnswer = question.getCorrectAnswer();
+    return answer.equals(correctAnswer);
+  }
 
 }
