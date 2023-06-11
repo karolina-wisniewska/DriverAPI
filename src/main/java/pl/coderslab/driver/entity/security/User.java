@@ -1,4 +1,4 @@
-package pl.coderslab.driver.entity;
+package pl.coderslab.driver.entity.security;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,6 +15,7 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
+import pl.coderslab.driver.entity.UserParams;
 
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class User {
   private Long id;
 
   @Column(columnDefinition="varchar(30)", name = "user_name")
-  private String username;
+  private String userName;
 
   @Column(columnDefinition="text")
   private String password;
