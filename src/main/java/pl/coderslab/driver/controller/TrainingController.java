@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Training;
 import pl.coderslab.driver.service.TrainingService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,5 +58,15 @@ public class TrainingController {
   @ResponseStatus(HttpStatus.OK)
   public void deleteTraining(@PathVariable long trainingId) {
     trainingService.deleteById(trainingId);
+  }
+
+  @GetMapping("/check/{trainingId}")
+  @ResponseStatus(HttpStatus.OK)
+  public int checkTraining(@PathVariable Long trainingId, @RequestParam Long answer1, @RequestParam Long answer2, @RequestParam Long answer3) {
+    List<Long> answers = new ArrayList<>();
+    answers.add(answer1);
+    answers.add(answer2);
+    answers.add(answer3);
+    return trainingService.calculatePointsFromTraining(trainingId, answers);
   }
 }
