@@ -15,3 +15,5 @@ insert into driver.trainings (advice_id) values (1), (2);
 update driver.questions set training_id = 1 where id between 1 and 3;
 
 update driver.questions set training_id = 2 where id between 4 and 6;
+
+insert into driver.users (user_name, password, active) values ('Admin', '$2a$10$H8betvRlG91b.P0INAsfnufN4Wc2WClZN9VvR2XpqvlXbRLTnWLpW', true);
