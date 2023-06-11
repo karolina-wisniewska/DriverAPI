@@ -1,4 +1,4 @@
-package pl.coderslab.driver.entity.security;
+package pl.coderslab.driver.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,7 +15,6 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
-import pl.coderslab.driver.entity.UserParams;
 
 import java.util.Set;
 
