@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Training;
+import pl.coderslab.driver.entity.security.User;
 import pl.coderslab.driver.service.TrainingService;
+import pl.coderslab.driver.service.UserParamsService;
+import pl.coderslab.driver.service.security.UserService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +30,8 @@ import java.util.Optional;
 public class TrainingController {
 
   private final TrainingService trainingService;
+  private final UserService userService;
+  private final UserParamsService userParamsService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
@@ -60,13 +66,15 @@ public class TrainingController {
     trainingService.deleteById(trainingId);
   }
 
-  @GetMapping("/check/{trainingId}")
+  @PostMapping("/check/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public int checkTraining(@PathVariable Long trainingId, @RequestParam Long answer1, @RequestParam Long answer2, @RequestParam Long answer3) {
+  public void checkTraining(Principal principal, @PathVariable Long trainingId, @RequestParam Long answer1, @RequestParam Long answer2, @RequestParam Long answer3) {
     List<Long> answers = new ArrayList<>();
     answers.add(answer1);
     answers.add(answer2);
     answers.add(answer3);
-    return trainingService.calculatePointsFromTraining(trainingId, answers);
+    String username = principal.getName();
+    User user = userService.findUserByUserName(username);
+    trainingService.checkTraining(trainingId, user, answers);
   }
 }
