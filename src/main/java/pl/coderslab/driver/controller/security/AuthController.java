@@ -15,7 +15,7 @@ public class AuthController {
   private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
   private final TokenService tokenService;
 
-  @PostMapping("/token")
+  @PostMapping("/api/token")
   public String token(Authentication authentication) {
     LOG.debug("Token requested for user: '{}", authentication.getName());
     String token = tokenService.generateToken(authentication);

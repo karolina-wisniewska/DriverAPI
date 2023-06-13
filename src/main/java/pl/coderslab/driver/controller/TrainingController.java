@@ -10,18 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Training;
 import pl.coderslab.driver.entity.security.User;
+import pl.coderslab.driver.model.TrainingToCheckDto;
 import pl.coderslab.driver.service.TrainingService;
 import pl.coderslab.driver.service.UserParamsService;
 import pl.coderslab.driver.service.security.UserService;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,13 +69,10 @@ public class TrainingController {
 
   @PostMapping("/check/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public void checkTraining(Principal principal, @PathVariable Long trainingId, @RequestParam Long answer1, @RequestParam Long answer2, @RequestParam Long answer3) {
-    List<Long> answers = new ArrayList<>();
-    answers.add(answer1);
-    answers.add(answer2);
-    answers.add(answer3);
+  public int checkTestTraining(Principal principal, @PathVariable Long trainingId, @RequestBody TrainingToCheckDto trainingToCheckDto) {
     String username = principal.getName();
     User user = userService.findUserByUserName(username);
-    trainingService.checkTraining(trainingId, user, answers);
+    return trainingService.checkTraining(trainingId, user, trainingToCheckDto.getQuestionAnswerMap());
   }
+
 }

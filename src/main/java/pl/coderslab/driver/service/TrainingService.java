@@ -13,6 +13,7 @@ import pl.coderslab.driver.entity.security.User;
 import pl.coderslab.driver.repository.TrainingRepository;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -41,32 +42,33 @@ public class TrainingService {
     trainingRepository.deleteById(id);
   }
 
-  public int calculatePointsFromTraining(Long trainingId, List<Long> answers) {
+  public int calculatePointsFromTraining(Map<Long,Long> answersMap) {
     int points = 0;
-    List<Question> questions = questionService.findAllByTraining(trainingId);
-    for (int i = 0; i < answers.size(); i++) {
-      Answer answer = answerService.findById(answers.get(i));
-      if (questionService.isQuestionPassed(questions.get(i), answer)) {
+    for (Long key : answersMap.keySet()) {
+      Question question = questionService.findById(key);
+      Answer userAnswer = answerService.findById(answersMap.get(key));
+      if (questionService.isQuestionPassed(question, userAnswer)) {
         points++;
       }
     }
     return points;
   }
 
-  public void checkTraining(Long trainingId, User user, List<Long> answers) {
-    int points = calculatePointsFromTraining(trainingId, answers);
+  public int checkTraining(Long trainingId, User user, Map<Long,Long> answersMap) {
+    int points = calculatePointsFromTraining(answersMap);
+    List<Question> trainingQuestions = questionService.findAllByTraining(trainingId);
     UserParams userParams = userParamsService.findByUser(user).orElseThrow(EntityNotFoundException::new);
     List<Advice> passedAdvices = userParams.getPassedAdvices();
     Advice advice = adviceService.findById(trainingId).orElseThrow(EntityNotFoundException::new);
     if (!passedAdvices.contains(advice)) {
       if (points > 0) {
         userParamsService.addPoints(user, points);
-        if (points == answers.size()) {
+        if (points == trainingQuestions.size()) {
           userParamsService.passTraining(user, trainingId);
         }
-
       }
     }
+    return points;
   }
 
 }

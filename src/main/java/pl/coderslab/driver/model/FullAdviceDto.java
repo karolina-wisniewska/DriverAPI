@@ -3,7 +3,6 @@ package pl.coderslab.driver.model;
 import lombok.Data;
 import pl.coderslab.driver.entity.Tag;
 
-import java.sql.Blob;
 import java.util.List;
 
 @Data
@@ -13,7 +12,7 @@ public class FullAdviceDto {
 
   private String name;
 
-  private Blob fullContent;
+  private String fullContentUrl;
 
   private String description;
 
