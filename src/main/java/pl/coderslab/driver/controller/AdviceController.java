@@ -118,7 +118,6 @@ public class AdviceController {
     simpleAdviceDto.setName(adviceEntity.getName());
     simpleAdviceDto.setDescription(adviceEntity.getDescription());
     simpleAdviceDto.setTags(adviceEntity.getTags());
-    simpleAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
     return simpleAdviceDto;
   }
 
@@ -128,7 +127,7 @@ public class AdviceController {
     fullAdviceDto.setName(adviceEntity.getName());
     fullAdviceDto.setDescription(adviceEntity.getDescription());
     fullAdviceDto.setTags(adviceEntity.getTags());
-    fullAdviceDto.setFullContent(adviceEntity.getMediaContent().getFullContent());
+    fullAdviceDto.setFullContentUrl(String.valueOf(adviceEntity.getMediaContent().getId()));
     fullAdviceDto.setShares(adviceEntity.getShares());
     fullAdviceDto.setLikes(adviceEntity.getLikes());
     return fullAdviceDto;

@@ -62,7 +62,6 @@ public class UserParamsController {
     simpleAdviceDto.setName(adviceEntity.getName());
     simpleAdviceDto.setDescription(adviceEntity.getDescription());
     simpleAdviceDto.setTags(adviceEntity.getTags());
-    simpleAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
     return simpleAdviceDto;
   }
 

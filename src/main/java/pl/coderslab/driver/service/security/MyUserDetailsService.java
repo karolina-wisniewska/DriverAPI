@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.coderslab.driver.entity.security.Role;
 import pl.coderslab.driver.entity.security.User;
-import pl.coderslab.driver.model.security.CurrentUser;
+import pl.coderslab.driver.model.security.LocalUser;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,7 +31,7 @@ public class MyUserDetailsService implements UserDetailsService {
       throw new UsernameNotFoundException(userName);
     }
     List<GrantedAuthority> authorities = getUserAuthority(user.getRoles());
-    return new CurrentUser(user.getUserName(),user.getPassword(),
+    return new LocalUser(user.getUserName(),user.getPassword(),
             authorities, user);
   }
 
