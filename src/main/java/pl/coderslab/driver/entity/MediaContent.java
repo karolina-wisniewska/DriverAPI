@@ -1,13 +1,12 @@
 package pl.coderslab.driver.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import lombok.Data;
-
-import java.sql.Blob;
 
 @Data
 @Entity
@@ -17,10 +16,11 @@ public class MediaContent {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Lob
-  private Blob fullContent;
+  private String name;
+
+  private String type;
 
   @Lob
-  private Blob cover;
-
+  @Column(length = 1000000)
+  private byte[] fullContent;
 }
