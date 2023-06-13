@@ -1,5 +1,6 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.UserParams;
 import pl.coderslab.driver.entity.security.User;
-import pl.coderslab.driver.model.ListAdviceDto;
+import pl.coderslab.driver.model.SimpleAdviceDto;
 import pl.coderslab.driver.model.UserParamsDto;
 import pl.coderslab.driver.service.AdviceService;
 import pl.coderslab.driver.service.UserParamsService;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
+@SecurityRequirement(name = "driver-api")
 @RequiredArgsConstructor
 public class UserParamsController {
 
@@ -32,7 +34,7 @@ public class UserParamsController {
 
   @GetMapping("/to-do")
   @ResponseStatus(HttpStatus.OK)
-  public List<ListAdviceDto> getAdvicesToDo(Principal principal) {
+  public List<SimpleAdviceDto> getAdvicesToDo(Principal principal) {
     String username = principal.getName();
     User user = userService.findUserByUserName(username);
     List<Advice> passedAdvices = adviceService.findAllByUser(user);
@@ -54,14 +56,14 @@ public class UserParamsController {
 
 
 
-  private ListAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
-    ListAdviceDto listAdviceDto = new ListAdviceDto();
-    listAdviceDto.setId(adviceEntity.getId());
-    listAdviceDto.setName(adviceEntity.getName());
-    listAdviceDto.setDescription(adviceEntity.getDescription());
-    listAdviceDto.setTags(adviceEntity.getTags());
-    listAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
-    return listAdviceDto;
+  private SimpleAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
+    SimpleAdviceDto simpleAdviceDto = new SimpleAdviceDto();
+    simpleAdviceDto.setId(adviceEntity.getId());
+    simpleAdviceDto.setName(adviceEntity.getName());
+    simpleAdviceDto.setDescription(adviceEntity.getDescription());
+    simpleAdviceDto.setTags(adviceEntity.getTags());
+    simpleAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
+    return simpleAdviceDto;
   }
 
   private UserParamsDto convertUserParamsToUserParamsDto(UserParams userParams){

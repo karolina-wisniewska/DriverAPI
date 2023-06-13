@@ -6,6 +6,8 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@OpenAPIDefinition(info = @Info(title = "Driver API", version = "1.0", description = "API for advices and trainings for drivers"))
 public class WebSecurityConfiguration {
 
   private final RsaKeyProperties rsaKeyProperties;
@@ -50,7 +53,7 @@ public class WebSecurityConfiguration {
     httpSecurity
             .csrf((csrf -> csrf.disable()))
             .authorizeHttpRequests(authorization -> authorization
-//                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(Customizer.withDefaults()))
@@ -61,4 +64,11 @@ public class WebSecurityConfiguration {
     return httpSecurity.build();
   }
 
+  private static final String[] AUTH_WHITELIST = {
+          "/token/**",
+          "/v3/api-docs/**",
+          "/v3/api-docs.yaml",
+          "swagger-ui/**",
+          "swagger-ui.html"
+  };
 }

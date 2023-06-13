@@ -16,7 +16,11 @@ update driver.questions set training_id = 1 where id between 1 and 3;
 
 update driver.questions set training_id = 2 where id between 4 and 6;
 
+insert into roles(name) values ('ROLE_USER'), ('ROLE_ADMIN');
+
 insert into driver.users (user_name, password, active) values ('Admin', '$2a$10$H8betvRlG91b.P0INAsfnufN4Wc2WClZN9VvR2XpqvlXbRLTnWLpW', true);
+
+insert into driver.users_roles(user_id, role_id) values (1, 2);
 
 insert into driver.user_params (points, user_id) values (0, 1);
 

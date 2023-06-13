@@ -1,5 +1,6 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,27 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Tag;
-import pl.coderslab.driver.entity.security.User;
 import pl.coderslab.driver.model.FullAdviceDto;
-import pl.coderslab.driver.model.ListAdviceDto;
+import pl.coderslab.driver.model.SimpleAdviceDto;
 import pl.coderslab.driver.service.AdviceService;
-import pl.coderslab.driver.service.security.UserService;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/advices")
+@SecurityRequirement(name = "driver-api")
 @RequiredArgsConstructor
 public class AdviceController {
 
   private final AdviceService adviceService;
-  private final UserService userService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<ListAdviceDto> getAllAdvices() {
+  public List<SimpleAdviceDto> getAllAdvices() {
     return adviceService.findAll()
             .stream()
             .map(this::convertAdviceToListAdviceDto)
@@ -45,7 +43,7 @@ public class AdviceController {
 
   @GetMapping(params = "tag")
   @ResponseStatus(HttpStatus.OK)
-  public List<ListAdviceDto> getAllAdvicesByTag(@RequestParam Tag tag) {
+  public List<SimpleAdviceDto> getAllAdvicesByTag(@RequestParam Tag tag) {
     return adviceService.findAllByTag(tag)
             .stream()
             .map(this::convertAdviceToListAdviceDto)
@@ -71,20 +69,8 @@ public class AdviceController {
 
   @GetMapping("/discover-others/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public List<ListAdviceDto> discoverOthersById(@PathVariable long adviceId) {
+  public List<SimpleAdviceDto> discoverOthersById(@PathVariable long adviceId) {
     return adviceService.discoverOthers(adviceId)
-            .stream()
-            .map(this::convertAdviceToListAdviceDto)
-            .collect(Collectors.toList());
-  }
-
-  @GetMapping("/to-do")
-  @ResponseStatus(HttpStatus.OK)
-  public List<ListAdviceDto> getAdvicesToDo(Principal principal) {
-    String username = principal.getName();
-    User user = userService.findUserByUserName(username);
-    List<Advice> passedAdvices = adviceService.findAllByUser(user);
-    return adviceService.findAdvicesToDo(passedAdvices)
             .stream()
             .map(this::convertAdviceToListAdviceDto)
             .collect(Collectors.toList());
@@ -126,14 +112,14 @@ public class AdviceController {
     adviceService.deleteById(adviceId);
   }
 
-  private ListAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
-    ListAdviceDto listAdviceDto = new ListAdviceDto();
-    listAdviceDto.setId(adviceEntity.getId());
-    listAdviceDto.setName(adviceEntity.getName());
-    listAdviceDto.setDescription(adviceEntity.getDescription());
-    listAdviceDto.setTags(adviceEntity.getTags());
-    listAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
-    return listAdviceDto;
+  private SimpleAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
+    SimpleAdviceDto simpleAdviceDto = new SimpleAdviceDto();
+    simpleAdviceDto.setId(adviceEntity.getId());
+    simpleAdviceDto.setName(adviceEntity.getName());
+    simpleAdviceDto.setDescription(adviceEntity.getDescription());
+    simpleAdviceDto.setTags(adviceEntity.getTags());
+    simpleAdviceDto.setCover(adviceEntity.getMediaContent().getCover());
+    return simpleAdviceDto;
   }
 
   private FullAdviceDto convertAdviceToFullAdviceDto(Advice adviceEntity){

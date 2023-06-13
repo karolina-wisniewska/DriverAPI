@@ -1,5 +1,6 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tags")
+@SecurityRequirement(name = "driver-api")
 @RequiredArgsConstructor
 public class TagController {
 
