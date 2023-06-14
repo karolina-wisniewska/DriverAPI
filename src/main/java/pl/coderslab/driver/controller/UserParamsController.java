@@ -29,7 +29,6 @@ public class UserParamsController {
 
   private final AdviceService adviceService;
   private final UserService userService;
-
   private final UserParamsService userParamsService;
 
   @GetMapping("/to-do")
@@ -40,7 +39,7 @@ public class UserParamsController {
     List<Advice> passedAdvices = adviceService.findAllByUser(user);
     return adviceService.findAdvicesToDo(passedAdvices)
             .stream()
-            .map(this::convertAdviceToListAdviceDto)
+            .map(this::convertAdviceEntityToSimpleAdviceDto)
             .collect(Collectors.toList());
   }
 
@@ -50,27 +49,25 @@ public class UserParamsController {
     String username = principal.getName();
     User user = userService.findUserByUserName(username);
     return userParamsService.findByUser(user)
-            .map(this::convertUserParamsToUserParamsDto)
+            .map(this::convertUserParamsEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
+  private UserParamsDto convertUserParamsEntityToDto(UserParams userParamsEntity){
+    UserParamsDto userParamsDto = new UserParamsDto();
+    userParamsDto.setId(userParamsEntity.getId());
+    User user = userParamsEntity.getUser();
+    userParamsDto.setUserName(user.getUserName());
+    userParamsDto.setPoints(userParamsEntity.getPoints());
+    return userParamsDto;
+  }
 
-
-  private SimpleAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
+  private SimpleAdviceDto convertAdviceEntityToSimpleAdviceDto(Advice adviceEntity){
     SimpleAdviceDto simpleAdviceDto = new SimpleAdviceDto();
     simpleAdviceDto.setId(adviceEntity.getId());
     simpleAdviceDto.setName(adviceEntity.getName());
     simpleAdviceDto.setDescription(adviceEntity.getDescription());
     simpleAdviceDto.setTags(adviceEntity.getTags());
     return simpleAdviceDto;
-  }
-
-  private UserParamsDto convertUserParamsToUserParamsDto(UserParams userParams){
-    UserParamsDto userParamsDto = new UserParamsDto();
-    userParamsDto.setId(userParams.getId());
-    userParamsDto.setPoints(userParams.getPoints());
-    User user = userParams.getUser();
-    userParamsDto.setUserName(user.getUserName());
-    return userParamsDto;
   }
 }

@@ -29,12 +29,13 @@ public class TagService {
   }
 
   public void save(Tag tag){
-    tagRepository.save(tag);
+    Tag existingTag = findByName(tag.getName()).orElse(null);
+    if(existingTag == null){
+      tagRepository.save(tag);
+    }
   }
 
   public void deleteById(Long id){
     tagRepository.deleteById(id);
   }
-
-
 }

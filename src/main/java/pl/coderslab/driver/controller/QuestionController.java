@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Question;
+import pl.coderslab.driver.model.QuestionDto;
 import pl.coderslab.driver.service.QuestionService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -29,29 +31,36 @@ public class QuestionController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<Question> getAllQuestions() {
-    return questionService.findAll();
+  public List<QuestionDto> getAllQuestions() {
+    return questionService.findAll()
+            .stream()
+            .map(this::convertQuestionEntityToDto)
+            .collect(Collectors.toList());
   }
 
   @GetMapping("/{questionId}")
   @ResponseStatus(HttpStatus.OK)
-  public Question getQuestionById(@PathVariable long questionId) {
+  public QuestionDto getQuestionById(@PathVariable long questionId) {
     return Optional.ofNullable(questionService.findById(questionId))
+            .map(this::convertQuestionEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public void createQuestion(@RequestBody Question question) {
-    questionService.save(question);
+  public void createQuestion(@RequestBody QuestionDto question) {
+    questionService.save(convertQuestionDtoToEntity(question));
   }
 
   @PutMapping("/{questionId}")
   @ResponseStatus(HttpStatus.OK)
-  public void updateQuestion(@PathVariable long questionId, @RequestBody Question question) {
-    Question questionToUpdate = questionService.findById(questionId);
-    questionToUpdate.setAnswers(question.getAnswers());
-    questionService.save(question);
+  public void updateQuestion(@PathVariable long questionId, @RequestBody QuestionDto question) {
+    Question questionFromDb = questionService.findById(questionId);
+    Question updatedQuestion = convertQuestionDtoToEntity(question);
+    questionFromDb.setContent(updatedQuestion.getContent());
+    questionFromDb.setAnswers(updatedQuestion.getAnswers());
+    questionFromDb.setCorrectAnswer(updatedQuestion.getCorrectAnswer());
+    questionService.save(questionFromDb);
   }
 
   @DeleteMapping("/{questionId}")
@@ -59,4 +68,24 @@ public class QuestionController {
   public void deleteQuestion(@PathVariable long questionId) {
     questionService.deleteById(questionId);
   }
+
+  private QuestionDto convertQuestionEntityToDto(Question questionEntity){
+    QuestionDto questionDto = new QuestionDto();
+    questionDto.setId(questionEntity.getId());
+    questionDto.setContent(questionEntity.getContent());
+    questionDto.setAnswers(questionEntity.getAnswers());
+    questionDto.setCorrectAnswer(questionEntity.getCorrectAnswer());
+    return questionDto;
+  }
+
+  private Question convertQuestionDtoToEntity(QuestionDto questionDto){
+    Question question = new Question();
+    question.setId(questionDto.getId());
+    question.setContent(questionDto.getContent());
+    question.setAnswers(questionDto.getAnswers());
+    question.setCorrectAnswer(questionDto.getCorrectAnswer());
+    return question;
+  }
 }
+
+

@@ -1,6 +1,7 @@
 package pl.coderslab.driver.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,16 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Training;
 import pl.coderslab.driver.entity.security.User;
+import pl.coderslab.driver.model.TrainingDto;
 import pl.coderslab.driver.model.TrainingToCheckDto;
+import pl.coderslab.driver.service.AdviceService;
 import pl.coderslab.driver.service.TrainingService;
-import pl.coderslab.driver.service.UserParamsService;
 import pl.coderslab.driver.service.security.UserService;
 
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/trainings")
@@ -31,34 +35,41 @@ import java.util.Optional;
 public class TrainingController {
 
   private final TrainingService trainingService;
+  private final AdviceService adviceService;
   private final UserService userService;
-  private final UserParamsService userParamsService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<Training> getAllTrainings() {
-    return trainingService.findAll();
+  public List<TrainingDto> getAllTrainings() {
+    return trainingService.findAll()
+            .stream()
+            .map(this::convertTrainingEntityToDto)
+            .collect(Collectors.toList());
   }
 
   @GetMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public Training getTrainingById(@PathVariable long trainingId) {
+  public TrainingDto getTrainingById(@PathVariable long trainingId) {
     return Optional.ofNullable(trainingService.findById(trainingId))
+            .map(this::convertTrainingEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public void createTraining(@RequestBody Training training) {
-    trainingService.save(training);
+  public void createTraining(@RequestBody TrainingDto training) {
+    Training trainingToCreate = convertTrainingDtoToEntity(training);
+    trainingService.save(convertTrainingDtoToEntity(training));
   }
 
   @PutMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
-  public void updateTraining(@PathVariable long trainingId, @RequestBody Training training) {
-    Training trainingToUpdate = trainingService.findById(trainingId);
-    trainingToUpdate.setQuestions(training.getQuestions());
-    trainingService.save(training);
+  public void updateTraining(@PathVariable long trainingId, @RequestBody TrainingDto updatedTraining) {
+    Training trainingFromDb = trainingService.findById(trainingId);
+    trainingFromDb.setQuestions(updatedTraining.getQuestions());
+    trainingFromDb.setAdvice(adviceService.findById(trainingId)
+            .orElseThrow(EntityNotFoundException::new));
+    trainingService.save(trainingFromDb);
   }
 
   @DeleteMapping("/{trainingId}")
@@ -75,4 +86,21 @@ public class TrainingController {
     return trainingService.checkTraining(trainingId, user, trainingToCheckDto.getQuestionAnswerMap());
   }
 
+  private TrainingDto convertTrainingEntityToDto(Training trainingEntity){
+    TrainingDto trainingDto = new TrainingDto();
+    trainingDto.setId(trainingEntity.getId());
+    Advice advice = trainingEntity.getAdvice();
+    trainingDto.setAdviceId(advice.getId());
+    trainingDto.setQuestions(trainingEntity.getQuestions());
+    return trainingDto;
+  }
+
+  private Training convertTrainingDtoToEntity(TrainingDto trainingDto){
+    Training training = new Training();
+    training.setId(trainingDto.getId());
+    training.setAdvice(adviceService.findById(trainingDto.getAdviceId())
+            .orElseThrow(EntityNotFoundException::new));
+    training.setQuestions(trainingDto.getQuestions());
+    return training;
+  }
 }
