@@ -14,13 +14,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.MediaContent;
+import pl.coderslab.driver.model.MediaContentDto;
 import pl.coderslab.driver.service.MediaContentService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/mediaContents")
+@RequestMapping("/api/media")
 @SecurityRequirement(name = "driver-api")
 @RequiredArgsConstructor
 public class MediaContentController {
@@ -29,34 +31,58 @@ public class MediaContentController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<MediaContent> getAllMediaContents() {
-    return mediaContentService.findAll();
+  public List<MediaContentDto> getAllMediaContents() {
+    return mediaContentService.findAll()
+            .stream()
+            .map(this::convertMediaContentEntityToDto)
+            .collect(Collectors.toList());
   }
 
-  @GetMapping("/{mediaContentId}")
+  @GetMapping(value = "/{mediaId}")
   @ResponseStatus(HttpStatus.OK)
-  public MediaContent getMediaContentById(@PathVariable long mediaContentId) {
-    return Optional.ofNullable(mediaContentService.findById(mediaContentId))
+  public MediaContentDto getMediaContentById(@PathVariable long mediaId) {
+    return Optional.ofNullable(mediaContentService.findById(mediaId))
+            .map(this::convertMediaContentEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public void createMediaContent(@RequestBody MediaContent mediaContent) {
+  public void createMediaContent(@RequestBody MediaContentDto mediaContent) {
+    mediaContentService.save(convertMediaContentDtoToEntity(mediaContent));
+  }
+
+  @PutMapping("/{mediaId}")
+  @ResponseStatus(HttpStatus.OK)
+  public void updateMediaContent(@PathVariable long mediaId, @RequestBody MediaContent mediaContent) {
+    MediaContent mediaContentFromDb = mediaContentService.findById(mediaId);
+    mediaContentFromDb.setName(mediaContent.getName());
+    mediaContentFromDb.setType(mediaContent.getType());
+    mediaContentFromDb.setFullContent(mediaContent.getFullContent());
     mediaContentService.save(mediaContent);
   }
 
-  @PutMapping("/{mediaContentId}")
+  @DeleteMapping("/{mediaId}")
   @ResponseStatus(HttpStatus.OK)
-  public void updateMediaContent(@PathVariable long mediaContentId, @RequestBody MediaContent mediaContent) {
-    MediaContent mediaContentToUpdate = mediaContentService.findById(mediaContentId);
-    mediaContentToUpdate.setCover(mediaContent.getCover());
-    mediaContentService.save(mediaContent);
+  public void deleteMediaContent(@PathVariable long mediaId) {
+    mediaContentService.deleteById(mediaId);
   }
 
-  @DeleteMapping("/{mediaContentId}")
-  @ResponseStatus(HttpStatus.OK)
-  public void deleteMediaContent(@PathVariable long mediaContentId) {
-    mediaContentService.deleteById(mediaContentId);
+  private MediaContentDto convertMediaContentEntityToDto(MediaContent mediaContentEntity){
+    MediaContentDto mediaContentDto = new MediaContentDto();
+    mediaContentDto.setId(mediaContentEntity.getId());
+    mediaContentDto.setName(mediaContentEntity.getName());
+    mediaContentDto.setType(mediaContentEntity.getType());
+    mediaContentDto.setFullContent(mediaContentEntity.getFullContent());
+    return mediaContentDto;
+  }
+
+  private MediaContent convertMediaContentDtoToEntity(MediaContentDto mediaContentDto){
+    MediaContent mediaContent = new MediaContent();
+    mediaContent.setId(mediaContentDto.getId());
+    mediaContent.setName(mediaContentDto.getName());
+    mediaContent.setType(mediaContentDto.getType());
+    mediaContent.setFullContent(mediaContentDto.getFullContent());
+    return mediaContent;
   }
 }

@@ -21,6 +21,6 @@ public class MediaContent {
   private String type;
 
   @Lob
-  @Column(length = 1000000)
+  @Column(length = 300000)
   private byte[] fullContent;
 }

@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.UserParams;
 import pl.coderslab.driver.entity.security.User;
-import pl.coderslab.driver.model.SimpleAdviceDto;
+import pl.coderslab.driver.model.AdviceDto;
 import pl.coderslab.driver.model.UserParamsDto;
 import pl.coderslab.driver.service.AdviceService;
 import pl.coderslab.driver.service.UserParamsService;
@@ -33,13 +33,13 @@ public class UserParamsController {
 
   @GetMapping("/to-do")
   @ResponseStatus(HttpStatus.OK)
-  public List<SimpleAdviceDto> getAdvicesToDo(Principal principal) {
+  public List<AdviceDto> getAdvicesToDo(Principal principal) {
     String username = principal.getName();
     User user = userService.findUserByUserName(username);
     List<Advice> passedAdvices = adviceService.findAllByUser(user);
     return adviceService.findAdvicesToDo(passedAdvices)
             .stream()
-            .map(this::convertAdviceEntityToSimpleAdviceDto)
+            .map(this::convertAdviceEntityToAdviceDto)
             .collect(Collectors.toList());
   }
 
@@ -62,12 +62,14 @@ public class UserParamsController {
     return userParamsDto;
   }
 
-  private SimpleAdviceDto convertAdviceEntityToSimpleAdviceDto(Advice adviceEntity){
-    SimpleAdviceDto simpleAdviceDto = new SimpleAdviceDto();
-    simpleAdviceDto.setId(adviceEntity.getId());
-    simpleAdviceDto.setName(adviceEntity.getName());
-    simpleAdviceDto.setDescription(adviceEntity.getDescription());
-    simpleAdviceDto.setTags(adviceEntity.getTags());
-    return simpleAdviceDto;
+  private AdviceDto convertAdviceEntityToAdviceDto(Advice adviceEntity){
+    AdviceDto adviceDto = new AdviceDto();
+    adviceDto.setId(adviceEntity.getId());
+    adviceDto.setName(adviceEntity.getName());
+    adviceDto.setDescription(adviceEntity.getDescription());
+    adviceDto.setTags(adviceEntity.getTags());
+    adviceDto.setShares(adviceEntity.getShares());
+    adviceDto.setLikes(adviceEntity.getLikes());
+    return adviceDto;
   }
 }
