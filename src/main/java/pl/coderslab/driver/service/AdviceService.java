@@ -91,4 +91,9 @@ public class AdviceService {
     long numberOfAdvices = count();
     return indexCalculator.calculateIndex(weekNumber, year, numberOfAdvices);
   }
+
+  public boolean checkIfAdvicePassed(Long adviceId, User user){
+    Advice advice = findById(adviceId).orElseThrow(EntityNotFoundException::new);
+    return findAllByUser(user).contains(advice);
+  };
 }

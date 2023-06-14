@@ -16,4 +16,5 @@ public class AdviceDto {
   private List<Tag> tags;
   private Long likes;
   private Long shares;
+  private boolean isPassed;
 }

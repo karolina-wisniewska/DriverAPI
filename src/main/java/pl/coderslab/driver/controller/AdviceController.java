@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Tag;
+import pl.coderslab.driver.entity.security.User;
 import pl.coderslab.driver.model.AdviceDto;
 import pl.coderslab.driver.model.AdviceToSaveDto;
 import pl.coderslab.driver.service.AdviceService;
+import pl.coderslab.driver.service.security.UserService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,48 +36,59 @@ public class AdviceController {
 
   private final AdviceService adviceService;
   private final ServletWebServerApplicationContext applicationContext;
+  private final UserService userService;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<AdviceDto> getAllAdvices() {
+  public List<AdviceDto> getAllAdvices(Principal principal) {
+    String username = principal.getName();
+    User user = userService.findUserByUserName(username);
     return adviceService.findAll()
             .stream()
-            .map(this::convertAdviceEntityToDto)
+            .map(entity -> convertAdviceEntityToDto(entity,user))
             .collect(Collectors.toList());
   }
 
   @GetMapping(params = "tag")
   @ResponseStatus(HttpStatus.OK)
-  public List<AdviceDto> getAllAdvicesByTag(@RequestParam Tag tag) {
+  public List<AdviceDto> getAllAdvicesByTag(Principal principal, @RequestParam Tag tag) {
+    String username = principal.getName();
+    User user = userService.findUserByUserName(username);
     return adviceService.findAllByTag(tag)
             .stream()
-            .map(this::convertAdviceEntityToDto)
+            .map(entity -> convertAdviceEntityToDto(entity,user))
             .collect(Collectors.toList());
   }
 
   @GetMapping("/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public AdviceDto getAdviceById(@PathVariable long adviceId) {
+  public AdviceDto getAdviceById(Principal principal, @PathVariable long adviceId) {
+    String username = principal.getName();
+    User user = userService.findUserByUserName(username);
     return adviceService.findById(adviceId)
-            .map(this::convertAdviceEntityToDto)
+            .map(entity -> convertAdviceEntityToDto(entity,user))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @GetMapping("/advice-of-the-week")
   @ResponseStatus(HttpStatus.OK)
-  public AdviceDto getAdviceOfTheWeek() {
+  public AdviceDto getAdviceOfTheWeek(Principal principal) {
+    String username = principal.getName();
+    User user = userService.findUserByUserName(username);
     long index = adviceService.getAdviceOfTheWeekIndex();
     return adviceService.findById(index)
-            .map(this::convertAdviceEntityToDto)
+            .map(entity -> convertAdviceEntityToDto(entity,user))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @GetMapping("/discover-others/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public List<AdviceDto> discoverOthersById(@PathVariable long adviceId) {
+  public List<AdviceDto> discoverOthersById(Principal principal, @PathVariable long adviceId) {
+    String username = principal.getName();
+    User user = userService.findUserByUserName(username);
     return adviceService.discoverOthers(adviceId)
             .stream()
-            .map(this::convertAdviceEntityToDto)
+            .map(entity -> convertAdviceEntityToDto(entity,user))
             .collect(Collectors.toList());
   }
 
@@ -116,7 +130,7 @@ public class AdviceController {
     adviceService.deleteById(adviceId);
   }
 
-  private AdviceDto convertAdviceEntityToDto(Advice adviceEntity){
+  private AdviceDto convertAdviceEntityToDto(Advice adviceEntity, User user){
     AdviceDto adviceDto = new AdviceDto();
     adviceDto.setId(adviceEntity.getId());
     adviceDto.setName(adviceEntity.getName());
@@ -126,6 +140,7 @@ public class AdviceController {
     adviceDto.setTags(adviceEntity.getTags());
     adviceDto.setShares(adviceEntity.getShares());
     adviceDto.setLikes(adviceEntity.getLikes());
+    adviceDto.setPassed(adviceService.checkIfAdvicePassed(adviceEntity.getId(), user));
     return adviceDto;
   }
 
