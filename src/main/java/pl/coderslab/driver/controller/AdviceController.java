@@ -3,6 +3,7 @@ package pl.coderslab.driver.controller;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Tag;
-import pl.coderslab.driver.model.FullAdviceDto;
-import pl.coderslab.driver.model.SimpleAdviceDto;
+import pl.coderslab.driver.model.AdviceDto;
+import pl.coderslab.driver.model.AdviceToSaveDto;
 import pl.coderslab.driver.service.AdviceService;
 
 import java.util.List;
@@ -31,55 +32,50 @@ import java.util.stream.Collectors;
 public class AdviceController {
 
   private final AdviceService adviceService;
+  private final ServletWebServerApplicationContext applicationContext;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  public List<SimpleAdviceDto> getAllAdvices() {
+  public List<AdviceDto> getAllAdvices() {
     return adviceService.findAll()
             .stream()
-            .map(this::convertAdviceToListAdviceDto)
+            .map(this::convertAdviceEntityToDto)
             .collect(Collectors.toList());
   }
 
   @GetMapping(params = "tag")
   @ResponseStatus(HttpStatus.OK)
-  public List<SimpleAdviceDto> getAllAdvicesByTag(@RequestParam Tag tag) {
+  public List<AdviceDto> getAllAdvicesByTag(@RequestParam Tag tag) {
     return adviceService.findAllByTag(tag)
             .stream()
-            .map(this::convertAdviceToListAdviceDto)
+            .map(this::convertAdviceEntityToDto)
             .collect(Collectors.toList());
   }
 
   @GetMapping("/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public FullAdviceDto getAdviceById(@PathVariable long adviceId) {
+  public AdviceDto getAdviceById(@PathVariable long adviceId) {
     return adviceService.findById(adviceId)
-            .map(this::convertAdviceToFullAdviceDto)
+            .map(this::convertAdviceEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @GetMapping("/advice-of-the-week")
   @ResponseStatus(HttpStatus.OK)
-  public FullAdviceDto getAdviceOfTheWeek() {
+  public AdviceDto getAdviceOfTheWeek() {
     long index = adviceService.getAdviceOfTheWeekIndex();
     return adviceService.findById(index)
-            .map(this::convertAdviceToFullAdviceDto)
+            .map(this::convertAdviceEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @GetMapping("/discover-others/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public List<SimpleAdviceDto> discoverOthersById(@PathVariable long adviceId) {
+  public List<AdviceDto> discoverOthersById(@PathVariable long adviceId) {
     return adviceService.discoverOthers(adviceId)
             .stream()
-            .map(this::convertAdviceToListAdviceDto)
+            .map(this::convertAdviceEntityToDto)
             .collect(Collectors.toList());
-  }
-
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public void createAdvice(@RequestBody Advice advice) {
-    adviceService.save(advice);
   }
 
   @PostMapping("/share/{adviceId}")
@@ -94,16 +90,24 @@ public class AdviceController {
     adviceService.like(adviceId);
   }
 
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public void createAdvice(@RequestBody AdviceToSaveDto advice) {
+    Advice adviceEntity = convertAdviceToSaveDtoToEntity(advice);
+    adviceEntity.setLikes(0L);
+    adviceEntity.setShares(0L);
+    adviceService.save(adviceEntity);
+  }
+
   @PutMapping("/{adviceId}")
   @ResponseStatus(HttpStatus.OK)
-  public void updateAdvice(@PathVariable long adviceId, @RequestBody Advice advice) {
-    Advice adviceToUpdate = adviceService.findById(adviceId).orElseThrow(EntityNotFoundException::new);
-    adviceToUpdate.setName(advice.getName());
-    adviceToUpdate.setDescription(advice.getDescription());
-    adviceToUpdate.setMediaContent(advice.getMediaContent());
-    adviceToUpdate.setTags(advice.getTags());
-    adviceToUpdate.setLikes(advice.getLikes());
-    adviceService.save(advice);
+  public void updateAdvice(@PathVariable long adviceId, @RequestBody AdviceToSaveDto updatedAdvice) {
+    Advice adviceFromDb = adviceService.findById(adviceId).orElseThrow(EntityNotFoundException::new);
+    adviceFromDb.setName(updatedAdvice.getName());
+    adviceFromDb.setMediaId(updatedAdvice.getMediaId());
+    adviceFromDb.setDescription(updatedAdvice.getDescription());
+    adviceFromDb.setTags(updatedAdvice.getTags());
+    adviceService.save(adviceFromDb);
   }
 
   @DeleteMapping("/{adviceId}")
@@ -112,25 +116,31 @@ public class AdviceController {
     adviceService.deleteById(adviceId);
   }
 
-  private SimpleAdviceDto convertAdviceToListAdviceDto(Advice adviceEntity){
-    SimpleAdviceDto simpleAdviceDto = new SimpleAdviceDto();
-    simpleAdviceDto.setId(adviceEntity.getId());
-    simpleAdviceDto.setName(adviceEntity.getName());
-    simpleAdviceDto.setDescription(adviceEntity.getDescription());
-    simpleAdviceDto.setTags(adviceEntity.getTags());
-    return simpleAdviceDto;
+  private AdviceDto convertAdviceEntityToDto(Advice adviceEntity){
+    AdviceDto adviceDto = new AdviceDto();
+    adviceDto.setId(adviceEntity.getId());
+    adviceDto.setName(adviceEntity.getName());
+    adviceDto.setMediaId(adviceEntity.getMediaId());
+    adviceDto.setMediaUrl(getMediaUrlFromMediaId(adviceEntity.getMediaId()));
+    adviceDto.setDescription(adviceEntity.getDescription());
+    adviceDto.setTags(adviceEntity.getTags());
+    adviceDto.setShares(adviceEntity.getShares());
+    adviceDto.setLikes(adviceEntity.getLikes());
+    return adviceDto;
   }
 
-  private FullAdviceDto convertAdviceToFullAdviceDto(Advice adviceEntity){
-    FullAdviceDto fullAdviceDto = new FullAdviceDto();
-    fullAdviceDto.setId(adviceEntity.getId());
-    fullAdviceDto.setName(adviceEntity.getName());
-    fullAdviceDto.setDescription(adviceEntity.getDescription());
-    fullAdviceDto.setTags(adviceEntity.getTags());
-    fullAdviceDto.setFullContentUrl(String.valueOf(adviceEntity.getMediaContent().getId()));
-    fullAdviceDto.setShares(adviceEntity.getShares());
-    fullAdviceDto.setLikes(adviceEntity.getLikes());
-    return fullAdviceDto;
+  private Advice convertAdviceToSaveDtoToEntity(AdviceToSaveDto adviceToSaveDto){
+    Advice adviceEntity = new Advice();
+    adviceEntity.setId(adviceToSaveDto.getId());
+    adviceEntity.setName(adviceToSaveDto.getName());
+    adviceEntity.setMediaId(adviceToSaveDto.getMediaId());
+    adviceEntity.setDescription(adviceToSaveDto.getDescription());
+    adviceEntity.setTags(adviceToSaveDto.getTags());
+    return adviceEntity;
   }
 
+  private String getMediaUrlFromMediaId(Long mediaId){
+    Integer port = applicationContext.getWebServer().getPort();
+    return "localhost:" + port + "/api/media/" + mediaId;
+  }
 }

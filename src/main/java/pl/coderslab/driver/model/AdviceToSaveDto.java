@@ -6,14 +6,11 @@ import pl.coderslab.driver.entity.Tag;
 import java.util.List;
 
 @Data
-public class SimpleAdviceDto {
+public class AdviceToSaveDto {
 
   private Long id;
-
   private String name;
-
+  private Long mediaId;
   private String description;
-
   private List<Tag> tags;
-
 }

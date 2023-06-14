@@ -6,18 +6,14 @@ import pl.coderslab.driver.entity.Tag;
 import java.util.List;
 
 @Data
-public class FullAdviceDto {
+public class AdviceDto {
 
   private Long id;
-
   private String name;
-
-  private String fullContentUrl;
-
+  private Long mediaId;
+  private String mediaUrl;
   private String description;
-
   private List<Tag> tags;
-
   private Long likes;
   private Long shares;
 }
