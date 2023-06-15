@@ -1,7 +1,6 @@
 package pl.coderslab.driver.model;
 
 import lombok.Data;
-import pl.coderslab.driver.entity.Question;
 
 import java.util.List;
 
@@ -12,5 +11,5 @@ public class TrainingDto {
 
   private Long adviceId;
 
-  private List<Question> questions;
+  private List<QuestionDto> questions;
 }

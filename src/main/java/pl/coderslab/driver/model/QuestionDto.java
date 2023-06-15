@@ -1,7 +1,6 @@
 package pl.coderslab.driver.model;
 
 import lombok.Data;
-import pl.coderslab.driver.entity.Answer;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class QuestionDto {
 
   private String content;
 
-  private List<Answer> answers;
+  private List<AnswerDto> answers;
 
-  private Answer correctAnswer;
+  private AnswerDto correctAnswer;
 }

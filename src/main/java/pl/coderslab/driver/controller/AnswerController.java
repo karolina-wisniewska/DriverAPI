@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import pl.coderslab.driver.converter.AnswerConverter;
 import pl.coderslab.driver.entity.Answer;
 import pl.coderslab.driver.model.AnswerDto;
 import pl.coderslab.driver.service.AnswerService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/answers")
@@ -29,44 +29,39 @@ import java.util.stream.Collectors;
 public class AnswerController {
 
   private final AnswerService answerService;
+  private final AnswerConverter answerConverter;
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<AnswerDto> getAllAnswers() {
-    return answerService.findAll()
-            .stream()
-            .map(this::convertAnswerEntityToDto)
-            .collect(Collectors.toList());
+    return answerConverter.convertListAnswerEntityToDto(answerService.findAll());
   }
 
   @GetMapping(params = "questionId")
   @ResponseStatus(HttpStatus.OK)
   public List<AnswerDto> getAllAnswersByQuestion(@RequestParam Long questionId) {
-    return answerService.findAllByQuestion(questionId)
-            .stream()
-            .map(this::convertAnswerEntityToDto)
-            .collect(Collectors.toList());
+    return answerConverter.convertListAnswerEntityToDto(answerService.findAllByQuestion(questionId));
   }
 
   @GetMapping("/{answerId}")
   @ResponseStatus(HttpStatus.OK)
   public AnswerDto getAnswerById(@PathVariable long answerId) {
     return Optional.ofNullable(answerService.findById(answerId))
-            .map(this::convertAnswerEntityToDto)
+            .map(answerConverter::convertAnswerEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public void createAnswer(@RequestBody AnswerDto answer) {
-    answerService.save(convertAnswerDtoToEntity(answer));
+    answerService.save(answerConverter.convertAnswerDtoToEntity(answer));
   }
 
   @PutMapping("/{answerId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateAnswer(@PathVariable long answerId, @RequestBody AnswerDto updatedAnswer) {
     Answer answerFromDb = answerService.findById(answerId);
-    answerFromDb.setContent(convertAnswerDtoToEntity(updatedAnswer).getContent());
+    answerFromDb.setContent(answerConverter.convertAnswerDtoToEntity(updatedAnswer).getContent());
     answerService.save(answerFromDb);
   }
 
@@ -77,17 +72,5 @@ public class AnswerController {
   }
 
 
-  private AnswerDto convertAnswerEntityToDto(Answer answerEntity){
-    AnswerDto answerDto = new AnswerDto();
-    answerDto.setId(answerEntity.getId());
-    answerDto.setContent(answerEntity.getContent());
-    return answerDto;
-  }
 
-  private Answer convertAnswerDtoToEntity(AnswerDto answerDto){
-    Answer answer = new Answer();
-    answer.setId(answerDto.getId());
-    answer.setContent(answerDto.getContent());
-    return answer;
-  }
 }

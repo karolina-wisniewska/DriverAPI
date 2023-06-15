@@ -1,7 +1,6 @@
 package pl.coderslab.driver.model;
 
 import lombok.Data;
-import pl.coderslab.driver.entity.Tag;
 
 import java.util.List;
 
@@ -12,5 +11,5 @@ public class AdviceToSaveDto {
   private String name;
   private Long mediaId;
   private String description;
-  private List<Tag> tags;
+  private List<TagDto> tags;
 }
