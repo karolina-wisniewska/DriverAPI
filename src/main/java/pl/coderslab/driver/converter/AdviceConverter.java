@@ -1,6 +1,7 @@
 package pl.coderslab.driver.converter;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import pl.coderslab.driver.entity.Advice;
 import pl.coderslab.driver.entity.Tag;
@@ -21,6 +22,12 @@ public class AdviceConverter {
   private final AdviceService adviceService;
   private final UserConverter userConverter;
   private final TagConverter tagConverter;
+
+  @Value("${server.address}")
+  private String serverAddress;
+
+  @Value("${server.port}")
+  private String serverPort;
 
   public AdviceDto convertAdviceEntityToDto(Advice adviceEntity, User user) {
     AdviceDto adviceDto = new AdviceDto();
@@ -61,6 +68,6 @@ public class AdviceConverter {
   }
 
   private String getMediaUrlFromMediaId(Long mediaId) {
-    return "localhost:8080" + "/api/media/" + mediaId;
+    return serverAddress + ":" + serverPort + "/api/media/" + mediaId;
   }
 }
