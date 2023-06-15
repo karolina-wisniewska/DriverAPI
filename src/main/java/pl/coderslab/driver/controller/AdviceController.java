@@ -1,6 +1,7 @@
 package pl.coderslab.driver.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class AdviceController {
 
   @GetMapping(params = "tag")
   @ResponseStatus(HttpStatus.OK)
-  public List<AdviceDto> getAllAdvicesByTag(Principal principal, @RequestParam Tag tag) {
+  public List<AdviceDto> getAllAdvicesByTag(Principal principal, @Nullable @RequestParam Tag tag) {
     return adviceConverter.convertListAdviceEntityToDto(principal, adviceService.findAllByTag(tag));
   }
 

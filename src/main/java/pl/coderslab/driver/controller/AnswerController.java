@@ -1,6 +1,7 @@
 package pl.coderslab.driver.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,7 +40,7 @@ public class AnswerController {
 
   @GetMapping(params = "questionId")
   @ResponseStatus(HttpStatus.OK)
-  public List<AnswerDto> getAllAnswersByQuestion(@RequestParam Long questionId) {
+  public List<AnswerDto> getAllAnswersByQuestion(@Nullable @RequestParam Long questionId) {
     return answerConverter.convertListAnswerEntityToDto(answerService.findAllByQuestion(questionId));
   }
 

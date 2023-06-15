@@ -1,6 +1,7 @@
 package pl.coderslab.driver.controller;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class TagController {
 
   @GetMapping(params = "search")
   @ResponseStatus(HttpStatus.OK)
-  public TagDto getTagByName(@RequestParam String search) {
+  public TagDto getTagByName(@Nullable @RequestParam String search) {
     return tagService.findByName(search)
             .map(tagConverter::convertTagEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
