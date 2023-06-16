@@ -6,10 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class MediaContent {
 
   @Id
@@ -22,5 +26,11 @@ public class MediaContent {
 
   @Lob
   @Column(length = 300000)
-  private byte[] fullContent;
+  private byte[] data;
+
+  public MediaContent(String name, String type, byte[] data) {
+    this.name = name;
+    this.type = type;
+    this.data = data;
+  }
 }
