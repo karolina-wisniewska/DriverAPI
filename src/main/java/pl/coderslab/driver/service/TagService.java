@@ -1,5 +1,6 @@
 package pl.coderslab.driver.service;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,12 @@ public class TagService {
     return tagRepository.findByName(name);
   }
 
-  public void save(Tag tag){
-    Tag existingTag = findByName(tag.getName()).orElse(null);
-    if(existingTag == null){
-      tagRepository.save(tag);
+  public Tag save(Tag tag){
+    Optional<Tag> savedTag = findByName(tag.getName());
+    if(savedTag.isPresent()){
+      throw new EntityExistsException("Tag named" + tag.getName() + "already exists");
     }
+    return tagRepository.save(tag);
   }
 
   public void deleteById(Long id){
