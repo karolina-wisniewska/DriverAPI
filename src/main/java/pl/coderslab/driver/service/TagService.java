@@ -37,6 +37,10 @@ public class TagService {
     return tagRepository.save(tag);
   }
 
+  public Tag update(Tag updatedTag){
+    return tagRepository.save(updatedTag);
+  }
+
   public void deleteById(Long id){
     tagRepository.deleteById(id);
   }
