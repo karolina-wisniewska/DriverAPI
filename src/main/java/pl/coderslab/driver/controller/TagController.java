@@ -56,16 +56,16 @@ public class TagController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public void createTag(@RequestBody TagDto tag) {
-    tagService.save(tagConverter.convertTagDtoToEntity(tag));
+  public Tag createTag(@RequestBody TagDto tag) {
+    return tagService.save(tagConverter.convertTagDtoToEntity(tag));
   }
 
   @PutMapping("/{tagId}")
   @ResponseStatus(HttpStatus.OK)
-  public void updateTag(@PathVariable long tagId, @RequestBody Tag updatedTag) {
+  public Tag updateTag(@PathVariable long tagId, @RequestBody Tag updatedTag) {
     Tag tagFromDb = tagService.findById(tagId).orElseThrow(EntityNotFoundException::new);
     tagFromDb.setName(updatedTag.getName());
-    tagService.save(tagFromDb);
+    return tagService.update(tagFromDb);
   }
 
   @DeleteMapping("/{tagId}")
