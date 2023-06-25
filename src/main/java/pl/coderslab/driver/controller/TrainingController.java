@@ -22,11 +22,9 @@ import pl.coderslab.driver.model.TrainingDto;
 import pl.coderslab.driver.model.TrainingToCheckDto;
 import pl.coderslab.driver.service.AdviceService;
 import pl.coderslab.driver.service.TrainingService;
-import pl.coderslab.driver.service.security.UserService;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/trainings")
@@ -36,7 +34,6 @@ public class TrainingController {
 
   private final TrainingService trainingService;
   private final AdviceService adviceService;
-  private final UserService userService;
   private final TrainingConverter trainingConverter;
   private final QuestionConverter questionConverter;
   private final UserConverter userConverter;
@@ -50,7 +47,7 @@ public class TrainingController {
   @GetMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
   public TrainingDto getTrainingById(@PathVariable long trainingId) {
-    return Optional.ofNullable(trainingService.findById(trainingId))
+    return trainingService.findById(trainingId)
             .map(trainingConverter::convertTrainingEntityToDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
@@ -64,7 +61,7 @@ public class TrainingController {
   @PutMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateTraining(@PathVariable long trainingId, @RequestBody TrainingDto updatedTraining) {
-    Training trainingFromDb = trainingService.findById(trainingId);
+    Training trainingFromDb = trainingService.findById(trainingId).orElseThrow(EntityNotFoundException::new);
     trainingFromDb.setQuestions(questionConverter.convertListQuestionDtoToEntity(updatedTraining.getQuestions()));
     trainingFromDb.setAdvice(adviceService.findById(trainingId)
             .orElseThrow(EntityNotFoundException::new));

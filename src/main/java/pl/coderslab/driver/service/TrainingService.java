@@ -5,7 +5,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.coderslab.driver.entity.Advice;
-import pl.coderslab.driver.entity.Answer;
 import pl.coderslab.driver.entity.Question;
 import pl.coderslab.driver.entity.Training;
 import pl.coderslab.driver.entity.UserParams;
@@ -14,6 +13,7 @@ import pl.coderslab.driver.repository.TrainingRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -21,21 +21,23 @@ import java.util.Map;
 public class TrainingService {
   private final TrainingRepository trainingRepository;
   private final QuestionService questionService;
-  private final AnswerService answerService;
   private final UserParamsService userParamsService;
-
   private final AdviceService adviceService;
 
   public List<Training> findAll() {
     return trainingRepository.findAll();
   }
 
-  public Training findById(Long id) {
-    return trainingRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+  public Optional<Training> findById(Long id) {
+    return trainingRepository.findById(id);
   }
 
-  public void save(Training training) {
-    trainingRepository.save(training);
+  public Training update(Training updatedTraining){
+    return trainingRepository.save(updatedTraining);
+  }
+
+  public Training save(Training training) {
+    return trainingRepository.save(training);
   }
 
   public void deleteById(Long id) {
@@ -45,9 +47,8 @@ public class TrainingService {
   public int calculatePointsFromTraining(Map<Long,Long> answersMap) {
     int points = 0;
     for (Long key : answersMap.keySet()) {
-      Question question = questionService.findById(key);
-      Answer userAnswer = answerService.findById(answersMap.get(key));
-      if (questionService.isQuestionPassed(question, userAnswer)) {
+      Long userAnswerId = answersMap.get(key);
+      if (questionService.isQuestionPassed(key, userAnswerId)) {
         points++;
       }
     }
