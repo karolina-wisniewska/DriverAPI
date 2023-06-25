@@ -37,9 +37,10 @@ public class QuestionService {
     return questionRepository.findAllByTraining(trainingId);
   }
 
-  public boolean isQuestionPassed(Question question, Answer answer){
-    Answer correctAnswer = question.getCorrectAnswer();
-    return answer.equals(correctAnswer);
+  public boolean isQuestionPassed(Long questionId, Long answerId){
+    Answer correctAnswer = findById(questionId).getCorrectAnswer();
+    Long correctAnswerId = correctAnswer.getId();
+    return correctAnswerId.equals(answerId);
   }
 
 }
