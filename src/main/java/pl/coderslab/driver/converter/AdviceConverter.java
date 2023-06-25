@@ -23,10 +23,10 @@ public class AdviceConverter {
   private final UserConverter userConverter;
   private final TagConverter tagConverter;
 
-  @Value("${server.address}")
+  @Value("${media.address}")
   private String serverAddress;
 
-  @Value("${server.port}")
+  @Value("${media.port}")
   private String serverPort;
 
   public AdviceDto convertAdviceEntityToDto(Advice adviceEntity, User user) {
