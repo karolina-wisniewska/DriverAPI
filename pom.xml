@@ -78,21 +78,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>pl.coderslab.driver.DriverApplication</mainClass>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>spring-boot</classifier>
-                            <mainClass>
-                                pl.coderslab.driver.DriverApplication
-                            </mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
