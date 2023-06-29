@@ -50,6 +50,7 @@
 REST API providing resources for drivers' self-improvement platform with:
 - advices on safe driving 
 - trainings to check user's knowledge
+Advices may contain media such as images and video files.
 
 Main functionalities:
 - CRUD operations enabling admin management on the components 
@@ -61,6 +62,8 @@ Main functionalities:
 - GET check training
 - GET advices by tag
 - GET tag by name
+
+Full API documentation is provided by Swagger after installation.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
