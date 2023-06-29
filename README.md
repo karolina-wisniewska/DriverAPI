@@ -66,14 +66,14 @@ Main functionalities:
 
 <a id="built-with"></a>
 ### Built With
+* Java 17
+* MySQL
+* Maven
 * Spring Boot
 * Spring Security
 * Hibernate
 * Lombok
-* MySQL
-* Maven
-* IntelliJ
-* Java 17
+* IntelliJ IDEA
 * OAuth2
 * JWT
 * OpenApi 3
@@ -86,7 +86,6 @@ Main functionalities:
 ### Prerequisites
 Java 17
 
-
 <a id="installation"></a>
 ### Installation
 
@@ -98,8 +97,8 @@ To launch the application, you need to clone the GitHub project where this demo 
    ```sh
    git clone https://github.com/karolina-wisniewska/DriverAPI.git
    ```
-   The web application starts on port 8080 in the localhost by default. Therefore, open the URL https://localhost:8080/.
-
+   
+3. API documentation can be found here: http://localhost:8080/swagger-ui/index.html.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
