@@ -50,6 +50,7 @@
 REST API providing resources for drivers' self-improvement platform with:
 - advices on safe driving 
 - trainings to check user's knowledge
+
 Advices may contain media such as images and video files.
 
 Main functionalities:
