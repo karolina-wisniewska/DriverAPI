@@ -31,7 +31,7 @@ public class AuthController {
     return token;
   }
 
-  @Operation(summary = "User registration")
+  @Operation(summary = "Register new user")
   @PostMapping(value = "/registration")
   public String createNewUser(@RequestBody AuthenticationRequest request) {
     boolean userExists = userService.existsByUserName(request.getUserName());
