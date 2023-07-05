@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "media")
-public class ConfigProperties {
+public class MediaConfigProperties {
 
   private String address;
   private int port;
