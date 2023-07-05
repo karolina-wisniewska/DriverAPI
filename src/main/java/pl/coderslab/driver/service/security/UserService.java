@@ -23,6 +23,9 @@ public class UserService {
     return userRepository.findUserByUserName(userName);
   }
 
+  public boolean existsByUserName(String userName){
+    return userRepository.existsByUserName(userName);
+  }
   public User saveUser(User user) {
     user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
     user.setActive(true);
@@ -34,7 +37,5 @@ public class UserService {
   public User findByRole(Role role) {
     return userRepository.findByRole(role);
   }
-
-  ;
 
 }

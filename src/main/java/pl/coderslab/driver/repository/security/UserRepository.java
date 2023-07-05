@@ -11,6 +11,7 @@ import pl.coderslab.driver.entity.security.User;
 public interface UserRepository extends JpaRepository<User, Long> {
   User findUserByUserName(String userName);
 
+  Boolean existsByUserName(String username);
   @Query("select u from User u where :role member of u.roles")
   User findByRole(@Param("role") Role role);
 }
