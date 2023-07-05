@@ -65,7 +65,8 @@ public class WebSecurityConfiguration {
   }
 
   private static final String[] AUTH_WHITELIST = {
-          "/token/**",
+          "/hello",
+          "/api/auth/**",
           "/v3/api-docs/**",
           "/v3/api-docs.yaml",
           "swagger-ui/**",
