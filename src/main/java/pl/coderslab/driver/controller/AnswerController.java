@@ -1,9 +1,11 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,18 +34,24 @@ public class AnswerController {
   private final AnswerService answerService;
   private final AnswerConverter answerConverter;
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<AnswerDto> getAllAnswers() {
     return answerConverter.convertListAnswerEntityToDto(answerService.findAll());
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping(params = "questionId")
   @ResponseStatus(HttpStatus.OK)
   public List<AnswerDto> getAllAnswersByQuestion(@Nullable @RequestParam Long questionId) {
     return answerConverter.convertListAnswerEntityToDto(answerService.findAllByQuestion(questionId));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping("/{answerId}")
   @ResponseStatus(HttpStatus.OK)
   public AnswerDto getAnswerById(@PathVariable long answerId) {
@@ -52,12 +60,16 @@ public class AnswerController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public void createAnswer(@RequestBody AnswerDto answer) {
     answerService.save(answerConverter.convertAnswerDtoToEntity(answer));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PutMapping("/{answerId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateAnswer(@PathVariable long answerId, @RequestBody AnswerDto updatedAnswer) {
@@ -66,6 +78,8 @@ public class AnswerController {
     answerService.save(answerFromDb);
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @DeleteMapping("/{answerId}")
   @ResponseStatus(HttpStatus.OK)
   public void deleteAnswer(@PathVariable long answerId) {

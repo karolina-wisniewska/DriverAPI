@@ -2,8 +2,11 @@ package pl.coderslab.driver.controller.security;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,17 +21,31 @@ import pl.coderslab.driver.service.security.UserService;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
   private final TokenService tokenService;
   private final UserService userService;
+  private final AuthenticationManager authenticationManager;
 
   @Operation(summary = "Authenticate to get access JWT token")
-  @PostMapping("/token")
-  public String token(@RequestBody AuthenticationRequest request) {
-    LOG.debug("Token requested for user: '{}", request.getUserName());
-    String token = tokenService.generateToken(request);
-    LOG.debug("Token granted {}", token);
-    return token;
+  @PostMapping(path = "/token")
+  public ResponseEntity<String> token(@RequestBody AuthenticationRequest request) {
+
+    if (!userService.existsByUserName(request.getUserName())) {
+      return ResponseEntity.status(401).body("User with username " + request.getUserName() + " not found!");
+    }
+
+    Authentication authentication;
+    try {
+      authentication = authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(
+                      request.getUserName(),
+                      request.getPassword()
+              )
+      );
+    } catch (AuthenticationException e) {
+      return ResponseEntity.status(401).body("Password is incorrect!");
+    }
+    String token = tokenService.generateToken(authentication);
+    return ResponseEntity.status(200).body(token);
   }
 
   @Operation(summary = "Register new user")

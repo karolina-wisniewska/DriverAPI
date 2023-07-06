@@ -1,10 +1,12 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +40,8 @@ public class TagController {
     return tagConverter.convertListTagEntityToDto(tagService.findAll());
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping("/{tagId}")
   @ResponseStatus(HttpStatus.OK)
   public TagDto getTagById(@PathVariable long tagId) {
@@ -54,12 +58,16 @@ public class TagController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Tag createTag(@RequestBody TagDto tag) {
     return tagService.save(tagConverter.convertTagDtoToEntity(tag));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PutMapping("/{tagId}")
   @ResponseStatus(HttpStatus.OK)
   public Tag updateTag(@PathVariable long tagId, @RequestBody Tag updatedTag) {
@@ -68,6 +76,8 @@ public class TagController {
     return tagService.update(tagFromDb);
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @DeleteMapping("/{tagId}")
   @ResponseStatus(HttpStatus.OK)
   public void deleteTag(@PathVariable long tagId) {

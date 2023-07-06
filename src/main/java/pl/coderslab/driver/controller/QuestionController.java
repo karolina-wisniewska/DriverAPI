@@ -1,8 +1,10 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +34,16 @@ public class QuestionController {
   private final QuestionConverter questionConverter;
   private final AnswerConverter answerConverter;
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<QuestionDto> getAllQuestions() {
     return questionConverter.convertListQuestionEntityToDto(questionService.findAll());
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping("/{questionId}")
   @ResponseStatus(HttpStatus.OK)
   public QuestionDto getQuestionById(@PathVariable long questionId) {
@@ -46,12 +52,16 @@ public class QuestionController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public void createQuestion(@RequestBody QuestionDto question) {
     questionService.save(questionConverter.convertQuestionDtoToEntity(question));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PutMapping("/{questionId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateQuestion(@PathVariable long questionId, @RequestBody QuestionDto updatedQuestion) {
@@ -62,6 +72,8 @@ public class QuestionController {
     questionService.save(questionFromDb);
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @DeleteMapping("/{questionId}")
   @ResponseStatus(HttpStatus.OK)
   public void deleteQuestion(@PathVariable long questionId) {

@@ -1,9 +1,11 @@
 package pl.coderslab.driver.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +40,9 @@ public class TrainingController {
   private final QuestionConverter questionConverter;
   private final UserConverter userConverter;
 
+
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<TrainingDto> getAllTrainings() {
@@ -52,12 +57,16 @@ public class TrainingController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found"));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public void createTraining(@RequestBody TrainingDto training) {
     trainingService.save(trainingConverter.convertTrainingDtoToEntity(training));
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @PutMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
   public void updateTraining(@PathVariable long trainingId, @RequestBody TrainingDto updatedTraining) {
@@ -68,6 +77,8 @@ public class TrainingController {
     trainingService.save(trainingFromDb);
   }
 
+  @Operation(summary = "Admin access only")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   @DeleteMapping("/{trainingId}")
   @ResponseStatus(HttpStatus.OK)
   public void deleteTraining(@PathVariable long trainingId) {
