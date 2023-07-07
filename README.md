@@ -53,8 +53,8 @@ REST API providing resources for drivers' self-improvement platform with:
 
 Advices may contain media such as images and video files.
 
-Main functionalities:
-- CRUD operations enabling admin management on the components 
+There are two roles for API users: USER and ADMIN.
+USER can use functionalities listed below:
 - GET user's to-do advices
 - GET advices to discover
 - GET advice of the week
@@ -64,7 +64,9 @@ Main functionalities:
 - GET advices by tag
 - GET tag by name
 
-Full API documentation is provided by Swagger after installation.
+ADMIN can use all the above methods, as well as perform CRUD operations enabling management on components (advices, trainings, questions, answers, tags, media).
+
+Full API documentation is provided by Swagger after installation. Methods available only for ADMIN access are described in Swagger-ui as `Admin access only`. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -81,6 +83,7 @@ Full API documentation is provided by Swagger after installation.
 * OAuth2
 * JWT
 * OpenApi 3
+* JUnit
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <a id="getting-started"></a>
@@ -88,7 +91,7 @@ Full API documentation is provided by Swagger after installation.
 ## Getting Started
 <a id="prerequisities"></a>
 ### Prerequisites
-Java 17
+Java 17, MySQL
 
 <a id="installation"></a>
 ### Installation
@@ -103,6 +106,15 @@ To launch the application, you need to clone the GitHub project where this demo 
    ```
    
 3. API documentation can be found here: http://localhost:8080/swagger-ui/index.html.
+
+4. API is secured using JWT Authentication. To test the application, go to `auth-controller` in swagger-ui.
+- In order to login as a USER:
+  - create new user in `/api/auth/registration` method,
+  - login in `/api/auth/token` to get your token,
+  - use the token to get authorization 
+- In order to login as an ADMIN:
+   - login in `/api/auth/token` using `userName: Admin` and `password: Admin` to get your token,
+   - use the token to get authorization
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
