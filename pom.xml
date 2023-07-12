@@ -16,7 +16,7 @@
     <description>driver</description>
     <properties>
         <java.version>17</java.version>
-        <start-class>pl.coderslab.DriverApplication</start-class>
+        <start-class>pl.coderslab.driver.DriverApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -82,7 +82,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                    <mainClass>pl.coderslab.DriverApplication</mainClass>
+                    <mainClass>pl.coderslab.driver.DriverApplication</mainClass>
                     <layout>JAR</layout>
                 </configuration>
                 <executions>
@@ -93,7 +93,7 @@
                         <configuration>
                             <classifier>spring-boot</classifier>
                             <mainClass>
-                                pl.coderslab.DriverApplication
+                                pl.coderslab.driver.DriverApplication
                             </mainClass>
                         </configuration>
                     </execution>
