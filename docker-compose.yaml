@@ -22,9 +22,8 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: driver
-      MYSQL_USER: exampleuser
-      MYSQL_PASSWORD: examplepass
-      MYSQL_RANDOM_ROOT_PASSWORD: 'coderslab'
+#      MYSQL_RANDOM_ROOT_PASSWORD: coderslab
+      MYSQL_ROOT_PASSWORD: coderslab
     ports:
       - "3308:3306"
     volumes:
