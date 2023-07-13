@@ -1,0 +1,33 @@
+version: "3.2"
+services:
+  my-app:
+    image: registry.gitlab.com/karolinawisniewska/dockertest/java/driver:v1
+    restart: always
+    container_name: my-app
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.datasource.url=jdbc:mysql://mysql-db:3306/driver?serverTimezone=UTC
+    depends_on:
+      - mysql-db
+    volumes:
+      - .m2:/root/.m2
+
+  mysql-db:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    container_name: mysql-db
+    command: --init-file /data/application/init.sql
+    restart: always
+    environment:
+      MYSQL_DATABASE: driver
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: 'coderslab'
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./init/schema.sql:/data/application/init.sql
+
