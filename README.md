@@ -33,6 +33,7 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
+        <li><a href="#demo">Demo</a></li>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
@@ -54,17 +55,18 @@ REST API providing resources for drivers' self-improvement platform with:
 Advices may contain media such as images and video files.
 
 There are two roles for API users: USER and ADMIN.
-USER can use functionalities listed below:
-- GET user's to-do advices
-- GET advices to discover
-- GET advice of the week
-- POST share advice
-- POST like advice
-- GET check training
-- GET advices by tag
-- GET tag by name
 
-ADMIN can use all the above methods, as well as perform CRUD operations enabling management on components (advices, trainings, questions, answers, tags, media).
+1. USER can access functionalities listed below:
+- get user's to-do advices (GET)
+- get advices to discover (GET)
+- get advice of the week (GET)
+- share advice (POST)
+- like advice (POST)
+- check training (GET)
+- find advices by tag (GET)
+- find tag by name (GET)
+
+2. ADMIN can use all the above methods, as well as perform CRUD operations enabling management on components (advices, trainings, questions, answers, tags, media).
 
 Full API documentation is provided by Swagger after installation. Methods available only for ADMIN access are described in Swagger-ui as `Admin access only`. 
 
@@ -79,42 +81,61 @@ Full API documentation is provided by Swagger after installation. Methods availa
 * Spring Security
 * Hibernate
 * Lombok
-* IntelliJ IDEA
 * OAuth2
 * JWT
 * OpenApi 3
 * JUnit
+* IntelliJ IDEA
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <a id="getting-started"></a>
 <!-- GETTING STARTED -->
 ## Getting Started
+
+<a id="demo"></a>
+### Demo
+1. Check out App Demo on YouTube:
+   <br />
+   <a href="https://www.youtube.com/watch?v=slIStjY72S4"><strong>Watch App Demo »</strong></a>
+   <br />
+
 <a id="prerequisities"></a>
 ### Prerequisites
-Java 17, MySQL
+Docker
 
 <a id="installation"></a>
 ### Installation
 
-To launch the application, you need to clone the GitHub project where this demo is hosted, and then run the main class.
-
-1. Create database with name 'driver' on localhost:3306 
-
-2. To launch the application, you need to clone the GitHub project, open it with IDE and then run the main class:
+1. To launch the application, you need to clone the GitHub project:
    ```sh
    git clone https://github.com/karolina-wisniewska/DriverAPI.git
    ```
-   
-3. API documentation can be found here: http://localhost:8080/swagger-ui/index.html.
 
-4. API is secured using JWT Authentication. To test the application, go to `auth-controller` in swagger-ui.
+2. Change directory to project root directory:
+   ```sh
+   cd driver/
+   ```
+
+3. Run docker-compose up in detached mode:
+   ```sh
+   docker-compose up -d
+   ```
+
+4. The web application starts on port 8080 in the localhost by default. Open the URL http://localhost:8080/swagger-ui/index.html to browse API documentation and test API.
+
+5. API is secured using JWT Authentication. To test the application, go to `auth-controller` in swagger-ui.
 - In order to login as a USER:
-  - create new user in `/api/auth/registration` method,
-  - login in `/api/auth/token` to get your token,
-  - use the token to get authorization 
+    - create new user in `/api/auth/registration` method,
+    - authenticate in `/api/auth/token` to get your token,
+    - use the token to get authorization
 - In order to login as an ADMIN:
-   - login in `/api/auth/token` using `userName: Admin` and `password: Admin` to get your token,
-   - use the token to get authorization
+    - authenticate in `/api/auth/token` using `userName: Admin` and `password: Admin` to get your token,
+    - use the token to get authorization
+
+6. To close the app and remove containers, run:
+   ```sh
+   docker-compose down
+   ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
