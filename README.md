@@ -113,7 +113,7 @@ Docker
 
 2. Change directory to project root directory:
    ```sh
-   cd driver/
+   cd DriverAPI/
    ```
 
 3. Run docker-compose up in detached mode:
