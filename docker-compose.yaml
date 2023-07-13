@@ -1,6 +1,6 @@
 version: "3.2"
 services:
-  my-app:
+  my-app-driver:
     image: registry.gitlab.com/karolinawisniewska/dockertest/java/driver:v1
     restart: always
     container_name: my-app
@@ -22,8 +22,8 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: driver
-#      MYSQL_RANDOM_ROOT_PASSWORD: coderslab
-      MYSQL_ROOT_PASSWORD: coderslab
+      MYSQL_RANDOM_ROOT_PASSWORD: coderslab
+#      MYSQL_ROOT_PASSWORD: coderslab
     ports:
       - "3308:3306"
     volumes:
