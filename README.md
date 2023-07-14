@@ -132,9 +132,9 @@ Docker
     - authenticate in `/api/auth/token` using `userName: Admin` and `password: Admin` to get your token,
     - use the token to get authorization
 
-6. To close the app and remove containers, run:
+6. To close the app, remove containers and volumes run:
    ```sh
-   docker-compose down
+   docker-compose down -v
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
