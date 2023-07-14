@@ -127,9 +127,11 @@ Docker
 - In order to login as a USER:
     - create new user in `/api/auth/registration` method,
     - authenticate in `/api/auth/token` to get your token,
+    - copy token from Response Body,
     - use the token to get authorization
 - In order to login as an ADMIN:
     - authenticate in `/api/auth/token` using `userName: Admin` and `password: Admin` to get your token,
+    - copy token from Response Body,
     - use the token to get authorization
 
 6. To close the app, remove containers and volumes run:
